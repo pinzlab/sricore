@@ -2,8 +2,8 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -23,21 +23,25 @@ func get[T any](client *http.Client, url string) (T, error) {
 
 	resp, err := client.Get(url)
 	if err != nil {
-		return result, fmt.Errorf("error realizando la solicitud al SRI: %v", err)
+		log.Printf("GET request error: %v", err)
+		return result, ErrHTTPRequest
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return result, fmt.Errorf("respuesta no exitosa del SRI, código de estado: %d", resp.StatusCode)
+		log.Printf("Unexpected status code from SRI: %d", resp.StatusCode)
+		return result, ErrHTTPStatus
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return result, fmt.Errorf("error leyendo el cuerpo de la respuesta: %v", err)
+		log.Printf("Failed to read response body: %v", err)
+		return result, ErrReadBody
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return result, fmt.Errorf("error procesando la respuesta JSON: %v", err)
+		log.Printf("Failed to unmarshal JSON: %v", err)
+		return result, ErrJSONUnmarshal
 	}
 
 	return result, nil

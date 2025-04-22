@@ -3,7 +3,6 @@ package sri
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 )
 
 // Bool es un tipo personalizado para manejar el marshalling y unmarshalling de booleanos
@@ -23,7 +22,7 @@ func (b *Bool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	case "NO":
 		*b = false
 	default:
-		return fmt.Errorf("valor no válido para Bool: %s", boolStr)
+		return WrapInvalidBoolXML(boolStr)
 	}
 
 	return nil
@@ -55,7 +54,7 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 	case "NO":
 		*b = false
 	default:
-		return fmt.Errorf("valor no válido para Bool en JSON: %s", boolStr)
+		return WrapInvalidBoolJSON(boolStr)
 	}
 
 	return nil
