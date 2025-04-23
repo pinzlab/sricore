@@ -2,7 +2,6 @@ package sri
 
 import (
 	"encoding/xml"
-	"fmt"
 	"time"
 )
 
@@ -24,7 +23,7 @@ func (date *Date) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// Parse the date string into a time object
 	parsedTime, err := time.Parse(VoucherDateFormat, dateStr)
 	if err != nil {
-		return fmt.Errorf("failed to parse time: %v", err)
+		return ErrInvalidVoucherDate
 	}
 
 	date.Time = parsedTime

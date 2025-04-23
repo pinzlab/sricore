@@ -23,7 +23,7 @@ func TestAccessKeyString_Valid(t *testing.T) {
 	}
 
 	// Call the string() method to generate the base access key
-	result, err := ak.string()
+	result, err := ak.strings()
 
 	// Verify that there is no error
 	require.NoError(t, err)
@@ -53,11 +53,11 @@ func TestAccessKeyString_InvalidLength(t *testing.T) {
 	}
 
 	// Call the string() method and expect an error
-	_, err := ak.string()
+	_, err := ak.strings()
 
 	// Verify that there is an invalid length error
 	assert.Error(t, err)
-	assert.Equal(t, "invalid_ak_format", err.Error())
+	assert.Equal(t, ErrInvalidAccessKeyFormat, err)
 }
 
 func TestAccessKeyString_InvalidFormat(t *testing.T) {
@@ -74,11 +74,11 @@ func TestAccessKeyString_InvalidFormat(t *testing.T) {
 	}
 
 	// Call the string() method and expect an error
-	_, err := ak.string()
+	_, err := ak.strings()
 
 	// Verify that there is a format error
 	assert.Error(t, err)
-	assert.Equal(t, "invalid_ak_format", err.Error())
+	assert.Equal(t, ErrInvalidAccessKeyFormat, err)
 }
 
 func TestGenerateAccessKey_Valid(t *testing.T) {
@@ -187,27 +187,27 @@ func TestFromString_Success(t *testing.T) {
 func TestFromString_Failure(t *testing.T) {
 	tests := []struct {
 		accessKey string
-		errMsg    string
+		errMsg    error
 	}{
 		{
 			// Extra digit (50 digits instead of 49)
 			accessKey: "20022020011791251237001200100100581491712345678171",
-			errMsg:    "invalid_ak_format",
+			errMsg:    ErrInvalidAccessKeyFormat,
 		},
 		{
 			// Missing digit (48 digits instead of 49)
 			accessKey: "200220200117912512370012001001005814918123456781",
-			errMsg:    "invalid_ak_format",
+			errMsg:    ErrInvalidAccessKeyFormat,
 		},
 		{
 			// Non-numeric character ('A' is invalid)
 			accessKey: "2002202001179125123A00120010010058149121234567811",
-			errMsg:    "invalid_ak_format",
+			errMsg:    ErrInvalidAccessKeyFormat,
 		},
 		{
 			// Invalid date (Invalid date: 30nd of February)
 			accessKey: "3002202001171404598400120010010001837471234567812",
-			errMsg:    "invalid_ak_date",
+			errMsg:    ErrInvalidAccessKeyDate,
 		},
 	}
 
@@ -220,7 +220,7 @@ func TestFromString_Failure(t *testing.T) {
 
 			// Assert that the error message contains the expected error
 			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), test.errMsg, "Expected error to contain: "+test.errMsg)
+				assert.Contains(t, err.Error(), test.errMsg.Error())
 			}
 		})
 	}

@@ -1,21 +1,16 @@
 package sri
 
-import (
-	"errors"
-	"fmt"
-)
+import "errors"
 
+// Errores base (tipo error)
 var (
-	ErrInvalidBoolXML  = errors.New("valor no válido para Bool en XML")
-	ErrInvalidBoolJSON = errors.New("valor no válido para Bool en JSON")
+	ErrInvalidAccessKeyFormat = errors.New("Formato inválido de clave de acceso")
+	ErrInvalidAccessKeyDate   = errors.New("Fecha inválida en clave de acceso")
+	ErrInvalidAccessKeyDigit  = errors.New("Error al calcular el dígito verificador de la clave de acceso")
+	ErrInvalidVoucherDate     = errors.New("Fecha inválida en formato SRI (esperado 02/01/2006)")
 )
 
-// WrapInvalidBoolXML agrega contexto con el valor original recibido.
-func WrapInvalidBoolXML(value string) error {
-	return fmt.Errorf("%w: %q", ErrInvalidBoolXML, value)
-}
-
-// WrapInvalidBoolJSON agrega contexto con el valor original recibido.
-func WrapInvalidBoolJSON(value string) error {
-	return fmt.Errorf("%w: %q", ErrInvalidBoolJSON, value)
-}
+// Mensajes con formato (tipo string)
+const (
+	InvalidBoolFormatMsg = "el valor %q no es válido para %q"
+)

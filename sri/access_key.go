@@ -2,7 +2,6 @@ package sri
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -53,7 +52,7 @@ type AccessKey struct {
 	Code string
 }
 
-// string genera el valor base para la clave de acceso concatenando
+// strings genera el valor base para la clave de acceso concatenando
 // los campos relevantes como fecha, tipo de comprobante, RUC, ambiente,
 // serie, número secuencial, código y tipo de emisión. También valida
 // la longitud y el formato del valor generado para asegurar que cumpla
@@ -62,7 +61,7 @@ type AccessKey struct {
 // Retorna:
 //   - El valor base de la clave de acceso (una cadena numérica de 48 caracteres) si es válido.
 //   - Un error si el valor no tiene la longitud o formato correctos.
-func (ak *AccessKey) string() (string, error) {
+func (ak *AccessKey) strings() (string, error) {
 
 	// Concatenate all the relevant fields to form the base value (48 digits)
 	value := ak.Date.Format(dateFormat) + // Date in ddmmaaaa format
@@ -77,7 +76,7 @@ func (ak *AccessKey) string() (string, error) {
 
 	// Check that the value is numeric
 	if !regexp.MustCompile(`^\d{48}$`).MatchString(value) {
-		return "", errors.New("invalid_ak_format")
+		return "", ErrInvalidAccessKeyFormat
 	}
 
 	return value, nil
@@ -110,10 +109,10 @@ func (ak *AccessKey) Generate() (string, error) {
 	// Apply the modulo 11 algorithm with a weight starting from 7
 	weight := 7
 	summation := 0
-	value, err := ak.string()
+	value, err := ak.strings()
 
 	if err != nil {
-		return "", err
+		return "", ErrInvalidAccessKeyDigit
 	}
 
 	// Iterate over each character in the data string
@@ -157,7 +156,7 @@ func (ak *AccessKey) FromString(accessKey string) error {
 
 	// Check that the value is numeric
 	if !regexp.MustCompile(`^\d{49}$`).MatchString(accessKey) {
-		return errors.New("invalid_ak_format")
+		return ErrInvalidAccessKeyFormat
 	}
 
 	// Extract the 48-character base string and the validator digit
@@ -177,7 +176,7 @@ func (ak *AccessKey) FromString(accessKey string) error {
 	var err error
 	ak.Date, err = time.Parse(dateFormat, dateStr)
 	if err != nil {
-		return errors.New("invalid_ak_date")
+		return ErrInvalidAccessKeyDate
 	}
 
 	return nil
