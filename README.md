@@ -2,7 +2,7 @@
 
 **SRICore** es una librería para generar, validar y consultar comprobantes electrónicos y datos del contribuyente en el SRI de Ecuador.
 
-## 📦 Instalación
+## 📥 Instalación
 
 Puedes instalar **SRICore** directamente desde el repositorio usando Go Modules:
 
@@ -10,8 +10,44 @@ Puedes instalar **SRICore** directamente desde el repositorio usando Go Modules:
 go get github.com/pinzlab/sricore
 ```
 
+## 📦 id
 
-## Cliente SRIOnline
+Este paquete proporciona funciones para validar números de identificación ecuatorianos, incluyendo la Cédula (DNI) y diferentes tipos de RUC (Registro Único de Contribuyentes).
+
+Soporta validaciones para:
+- Cédula (DNI)
+- RUC para Personas Naturales
+- RUC para Empresas Privadas
+- RUC para Entidades Públicas
+
+La validación se realiza utilizando los algoritmos Modulo 10 y Modulo 11 según lo especificado por la normativa ecuatoriana.
+
+
+
+
+
+### Validar una Cédula (DNI)
+
+```go
+	if err := id.IsDNI("0601234560"); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Cédula valida")
+```
+
+### Validar RUC
+
+```go
+	if err := id.IsRUC("0601234560001"); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("RUC valido")
+```
+
+
+## 📦 ws
 
 **SRICore** expone un cliente HTTP llamado SRIOnline para interactuar con los endpoints públicos del SRI (Servicio de Rentas Internas). Este cliente permite consultar:
 
@@ -42,7 +78,7 @@ func main() {
 ### Verificar si un RUC existe
 
 ```go
-exists, err := service.CheckRUC("9999999999001")
+exists, err := service.CheckRUC("0601234560001")
 if err != nil {
 	log.Fatal(err)
 }
@@ -57,7 +93,7 @@ if exists {
 ### Obtener información del contribuyente
 
 ```go
-contributors, err := service.GetContributors("9999999999001")
+contributors, err := service.GetContributors("0601234560001")
 if err != nil {
 	log.Fatal(err)
 }
@@ -73,7 +109,7 @@ for _, contributor := range contributors {
 ### Obtener establecimientos registrados
 
 ```go
-establishments, err := service.GetEstablishments("9999999999001")
+establishments, err := service.GetEstablishments("0601234560001")
 if err != nil {
 	log.Fatal(err)
 }
